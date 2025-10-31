@@ -1,0 +1,87 @@
+{ config, lib, pkgs, ... }:
+
+let
+  vars = import ./vars.nix;
+in
+{
+  ###
+  # Imports
+  ###
+  imports =
+    [
+      ./hardware-configuration.nix
+      "${builtins.fetchTarball "https://github.com/nix-community/disko/archive/v1.11.0.tar.gz"}/module.nix"
+     ./disk-config.nix
+     ../common/networking.nix
+     (import ../common/locale.nix ./vars.nix)
+     ../common/docker.nix
+     ../common/openssh.nix
+     ../common/nix.nix
+     ../common/packages.nix
+     (import ../common/users.nix ./vars.nix)
+     ../common/services.nix
+    ];
+
+  ###
+  # System - Gibraltar specific
+  ###
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
+    };
+    initrd.systemd.enable = true;
+  };
+  systemd.targets.multi-user.enable = true;
+
+  networking.hostName = vars.hostname;
+  networking.networkmanager.enable = true;
+
+  ###
+  # System Services - Gibraltar specific
+  ###
+  services.getty.autologinUser = null;
+
+  ###
+  # System Packages - Gibraltar specific
+  ###
+  environment.systemPackages = with pkgs; [
+    tmux
+  ];
+
+  ###
+  # Users - Gibraltar specific
+  ###
+  users.users.${vars.username} = {
+    extraGroups = ["networkmanager"];
+  };
+
+  ###
+  # User Services - Gibraltar specific
+  ###
+  services.cron.systemCronJobs = [
+    "0 0 1 * * nixos /home/nixos/jobs/mastodon-cleanup.sh"
+  ];
+ 
+  # This option defines the first version of NixOS you have installed on this particular machine,
+  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
+  #
+  # Most users should NEVER change this value after the initial install, for any reason,
+  # even if you've upgraded your system to a new NixOS release.
+  #
+  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
+  # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
+  # to actually do that.
+  #
+  # This value being lower than the current NixOS release does NOT mean your system is
+  # out of date, out of support, or vulnerable.
+  #
+  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
+  # and migrated your data accordingly.
+  #
+  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
+  system.stateVersion = "24.11"; # Did you read the comment?
+}

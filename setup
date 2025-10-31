@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Get the script directory (absolute path)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Get current hostname
+CURRENT_HOSTNAME="$(hostname)"
+echo "Current hostname: $CURRENT_HOSTNAME"
+
+# Find folder matching hostname by suffix
+CONFIG_FOLDER=""
+for dir in "$SCRIPT_DIR"/*; do
+  if [ -d "$dir" ]; then
+    folder_name="$(basename "$dir")"
+    # Check if folder name ends with the hostname
+    if [[ "$folder_name" == *-"$CURRENT_HOSTNAME" ]] || [ "$folder_name" = "$CURRENT_HOSTNAME" ]; then
+      CONFIG_FOLDER="$dir"
+      break
+    fi
+  fi
+done
+
+if [ -z "$CONFIG_FOLDER" ]; then
+  echo "Error: No folder found for hostname '$CURRENT_HOSTNAME'"
+  exit 1
+fi
+
+echo "Found config folder: $CONFIG_FOLDER"
+
+# Check if configuration.nix exists in the folder
+TARGET_CONFIG="$CONFIG_FOLDER/configuration.nix"
+if [ ! -f "$TARGET_CONFIG" ]; then
+  echo "Error: configuration.nix not found in $CONFIG_FOLDER"
+  exit 1
+fi
+
+echo "Target configuration: $TARGET_CONFIG"
+
+# Handle /etc/nixos/configuration.nix
+NIXOS_CONFIG="/etc/nixos/configuration.nix"
+BACKUP_PATH="/etc/nixos/configuration.nix.bak"
+
+if [ -e "$NIXOS_CONFIG" ]; then
+  if [ -L "$NIXOS_CONFIG" ]; then
+    # It's a symlink
+    echo "Existing symlink detected at $NIXOS_CONFIG"
+    LINK_TARGET="$(readlink -f "$NIXOS_CONFIG")"
+    echo "Current symlink points to: $LINK_TARGET"
+    echo "Backing up symlink target to $BACKUP_PATH"
+    echo "$LINK_TARGET" > "$BACKUP_PATH"
+    rm "$NIXOS_CONFIG"
+  elif [ -f "$NIXOS_CONFIG" ]; then
+    # It's a regular file
+    echo "Existing file detected at $NIXOS_CONFIG"
+    echo "Backing up to $BACKUP_PATH"
+    cp "$NIXOS_CONFIG" "$BACKUP_PATH"
+    rm "$NIXOS_CONFIG"
+  fi
+fi
+
+# Create symlink
+echo "Creating symlink: $NIXOS_CONFIG -> $TARGET_CONFIG"
+ln -s "$TARGET_CONFIG" "$NIXOS_CONFIG"
+
+echo "Setup complete!"
+echo "Configuration symlinked to: $TARGET_CONFIG"
