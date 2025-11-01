@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "Building NixOS configuration and showing diff..."
+echo ""
+
+# Run nixos-rebuild dry-activate to show what would change
+sudo nixos-rebuild dry-activate
