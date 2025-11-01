@@ -16,8 +16,39 @@ CURRENT_SYSTEM="/run/current-system"
 NEW_SYSTEM="/nix/var/nix/profiles/system"
 
 echo ""
-echo "=== Configuration Diff ==="
+echo "========================================="
+echo "    Configuration Changes Summary"
+echo "========================================="
 echo ""
 
-# Use nvd to show a nice diff
-nix-shell -p nvd --run "nvd diff $CURRENT_SYSTEM $NEW_SYSTEM"
+# Show package differences
+echo "=== Package Changes ==="
+nix store diff-closures "$CURRENT_SYSTEM" "$NEW_SYSTEM"
+echo ""
+
+# Show activation script differences
+echo "=== Activation Script Changes ==="
+diff -u "$CURRENT_SYSTEM/activate" "$NEW_SYSTEM/activate" || echo "No activation script changes"
+echo ""
+
+# Show systemd service changes
+echo "=== Systemd Service Changes ==="
+echo "New services:"
+comm -13 <(ls "$CURRENT_SYSTEM/etc/systemd/system/" 2>/dev/null | sort) <(ls "$NEW_SYSTEM/etc/systemd/system/" 2>/dev/null | sort) || echo "None"
+echo ""
+echo "Removed services:"
+comm -23 <(ls "$CURRENT_SYSTEM/etc/systemd/system/" 2>/dev/null | sort) <(ls "$NEW_SYSTEM/etc/systemd/system/" 2>/dev/null | sort) || echo "None"
+echo ""
+
+# Show etc changes
+echo "=== Configuration File Changes ==="
+echo "New files in /etc:"
+comm -13 <(find "$CURRENT_SYSTEM/etc" -type f 2>/dev/null | sed "s|$CURRENT_SYSTEM/etc/||" | sort) <(find "$NEW_SYSTEM/etc" -type f 2>/dev/null | sed "s|$NEW_SYSTEM/etc/||" | sort) | head -20
+echo ""
+echo "Removed files from /etc:"
+comm -23 <(find "$CURRENT_SYSTEM/etc" -type f 2>/dev/null | sed "s|$CURRENT_SYSTEM/etc/||" | sort) <(find "$NEW_SYSTEM/etc" -type f 2>/dev/null | sed "s|$NEW_SYSTEM/etc/||" | sort) | head -20
+echo ""
+
+echo "========================================="
+echo "Review complete. Use 'sudo nixos-rebuild switch' to apply changes."
+echo "========================================="
