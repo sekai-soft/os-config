@@ -17,7 +17,7 @@ fi
 # Remove current symlink/file if it exists
 if [ -e "$NIXOS_CONFIG" ]; then
   echo "Removing current configuration at $NIXOS_CONFIG"
-  rm "$NIXOS_CONFIG"
+  sudo rm "$NIXOS_CONFIG"
 fi
 
 # Check if backup is a regular file or contains a symlink path
@@ -28,13 +28,13 @@ if [ -f "$BACKUP_PATH" ]; then
   # If it looks like an absolute path and file exists, it's a symlink backup
   if [[ "$first_line" == /* ]] && [ -f "$first_line" ]; then
     echo "Restoring symlink to: $first_line"
-    ln -s "$first_line" "$NIXOS_CONFIG"
-    rm "$BACKUP_PATH"
+    sudo ln -s "$first_line" "$NIXOS_CONFIG"
+    sudo rm "$BACKUP_PATH"
     echo "Symlink restored successfully!"
   else
     # It's a regular file backup
     echo "Restoring file from backup"
-    mv "$BACKUP_PATH" "$NIXOS_CONFIG"
+    sudo mv "$BACKUP_PATH" "$NIXOS_CONFIG"
     echo "File restored successfully!"
   fi
 else
