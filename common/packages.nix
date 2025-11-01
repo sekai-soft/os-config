@@ -5,7 +5,9 @@
     curl
     git
     htop
+    jq
     nano
+    tmux
     wget
   ];
 

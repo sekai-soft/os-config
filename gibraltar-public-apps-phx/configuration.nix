@@ -46,13 +46,6 @@ in
   services.getty.autologinUser = null;
 
   ###
-  # System Packages - Gibraltar specific
-  ###
-  environment.systemPackages = with pkgs; [
-    tmux
-  ];
-
-  ###
   # Users - Gibraltar specific
   ###
   users.users.${vars.username} = {
