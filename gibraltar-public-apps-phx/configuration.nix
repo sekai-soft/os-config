@@ -7,20 +7,19 @@ in
   ###
   # Imports
   ###
-  imports =
-    [
-     ./hardware-configuration.nix
-     "${builtins.fetchTarball "https://github.com/nix-community/disko/archive/v1.11.0.tar.gz"}/module.nix"
-     ./disk-config.nix
-     ../common/networking.nix
-     (import ../common/locale.nix ./vars.nix)
-     ../common/docker.nix
-     ../common/openssh.nix
-     ../common/nix.nix
-     ../common/packages.nix
-     (import ../common/users.nix ./vars.nix)
-     ../common/services.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+    "${builtins.fetchTarball "https://github.com/nix-community/disko/archive/v1.11.0.tar.gz"}/module.nix"
+    ./disk-config.nix
+    ../common/networking.nix
+    (import ../common/locale.nix ./vars.nix)
+    ../common/docker.nix
+    ../common/openssh.nix
+    ../common/nix.nix
+    ../common/packages.nix
+    (import ../common/users.nix ./vars.nix)
+    ../common/services.nix
+  ];
 
   ###
   # System - Gibraltar specific
