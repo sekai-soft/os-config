@@ -2,32 +2,24 @@
 
 set -e
 
-# Get the script directory (absolute path)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Get current hostname
-CURRENT_HOSTNAME="$(hostname)"
-echo "Current hostname: $CURRENT_HOSTNAME"
-
-# Find folder matching hostname by suffix
-CONFIG_FOLDER=""
-for dir in "$SCRIPT_DIR"/*; do
-  if [ -d "$dir" ]; then
-    folder_name="$(basename "$dir")"
-    # Check if folder name ends with the hostname
-    if [[ "$folder_name" == *-"$CURRENT_HOSTNAME" ]] || [ "$folder_name" = "$CURRENT_HOSTNAME" ]; then
-      CONFIG_FOLDER="$dir"
-      break
-    fi
-  fi
-done
-
-if [ -z "$CONFIG_FOLDER" ]; then
-  echo "Error: No folder found for hostname '$CURRENT_HOSTNAME'"
+# Check if directory argument is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <config-directory>"
+  echo "Example: $0 /home/user/Developer/os-config/my-machine"
   exit 1
 fi
 
-echo "Found config folder: $CONFIG_FOLDER"
+CONFIG_FOLDER="$1"
+
+# Validate that the directory exists
+if [ ! -d "$CONFIG_FOLDER" ]; then
+  echo "Error: Directory '$CONFIG_FOLDER' does not exist"
+  exit 1
+fi
+
+# Convert to absolute path
+CONFIG_FOLDER="$(cd "$CONFIG_FOLDER" && pwd)"
+echo "Using config folder: $CONFIG_FOLDER"
 
 # Check if configuration.nix exists in the folder
 TARGET_CONFIG="$CONFIG_FOLDER/configuration.nix"
