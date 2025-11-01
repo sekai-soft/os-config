@@ -9,8 +9,8 @@ in
   ###
   imports =
     [
-      ./hardware-configuration.nix
-      "${builtins.fetchTarball "https://github.com/nix-community/disko/archive/v1.11.0.tar.gz"}/module.nix"
+     ./hardware-configuration.nix
+     "${builtins.fetchTarball "https://github.com/nix-community/disko/archive/v1.11.0.tar.gz"}/module.nix"
      ./disk-config.nix
      ../common/networking.nix
      (import ../common/locale.nix ./vars.nix)
