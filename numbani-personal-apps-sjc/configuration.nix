@@ -20,15 +20,15 @@ in
   ];
   
   ###
-  # System - Numbani specific
+  # Automatically generated for host, don't change
   ###
   boot.tmp.cleanOnBoot = true;
-
   zramSwap.enable = false;
 
+  ###
+  # Server specific
+  ###
   networking.hostName = vars.hostname;
-
-  virtualisation.docker.autoPrune.randomizedDelaySec = "5min";
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.

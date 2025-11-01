@@ -9,8 +9,6 @@ in
   ###
   imports = [
     ./hardware-configuration.nix
-    "${builtins.fetchTarball "https://github.com/nix-community/disko/archive/v1.11.0.tar.gz"}/module.nix"
-    ./disk-config.nix
     ../common/networking.nix
     (import ../common/locale.nix ./vars.nix)
     ../common/docker.nix
@@ -19,10 +17,12 @@ in
     ../common/packages.nix
     (import ../common/users.nix ./vars.nix)
     ../common/services.nix
+    "${builtins.fetchTarball "https://github.com/nix-community/disko/archive/v1.11.0.tar.gz"}/module.nix"
+    ./disk-config.nix
   ];
 
   ###
-  # System - Gibraltar specific
+  # Automatically generated for host, don't change
   ###
   boot = {
     loader = {
@@ -36,24 +36,19 @@ in
   };
   systemd.targets.multi-user.enable = true;
 
-  networking.hostName = vars.hostname;
   networking.networkmanager.enable = true;
 
-  ###
-  # System Services - Gibraltar specific
-  ###
   services.getty.autologinUser = null;
 
-  ###
-  # Users - Gibraltar specific
-  ###
   users.users.${vars.username} = {
     extraGroups = ["networkmanager"];
   };
 
   ###
-  # User Services - Gibraltar specific
+  # Server specific
   ###
+  networking.hostName = vars.hostname;
+
   services.cron.systemCronJobs = [
     "0 0 1 * * nixos /home/nixos/jobs/mastodon-cleanup.sh"
   ];
