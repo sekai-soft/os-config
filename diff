@@ -23,12 +23,12 @@ echo ""
 
 # Show package differences
 echo "=== Package Changes ==="
-nix store diff-closures "$CURRENT_SYSTEM" "$NEW_SYSTEM"
+nix --extra-experimental-features nix-command store diff-closures "$CURRENT_SYSTEM" "$NEW_SYSTEM"
 echo ""
 
 # Show activation script differences
 echo "=== Activation Script Changes ==="
-diff -u "$CURRENT_SYSTEM/activate" "$NEW_SYSTEM/activate" || echo "No activation script changes"
+diff -u "$CURRENT_SYSTEM/activate" "$NEW_SYSTEM/activate" 2>/dev/null | head -30 || echo "No activation script changes"
 echo ""
 
 # Show systemd service changes
@@ -38,6 +38,15 @@ comm -13 <(ls "$CURRENT_SYSTEM/etc/systemd/system/" 2>/dev/null | sort) <(ls "$N
 echo ""
 echo "Removed services:"
 comm -23 <(ls "$CURRENT_SYSTEM/etc/systemd/system/" 2>/dev/null | sort) <(ls "$NEW_SYSTEM/etc/systemd/system/" 2>/dev/null | sort) || echo "None"
+echo ""
+
+# Show systemd timer changes
+echo "=== Systemd Timer Changes ==="
+echo "New timers:"
+comm -13 <(ls "$CURRENT_SYSTEM/etc/systemd/system/"*.timer 2>/dev/null | xargs -n1 basename 2>/dev/null | sort) <(ls "$NEW_SYSTEM/etc/systemd/system/"*.timer 2>/dev/null | xargs -n1 basename 2>/dev/null | sort) || echo "None"
+echo ""
+echo "Removed timers:"
+comm -23 <(ls "$CURRENT_SYSTEM/etc/systemd/system/"*.timer 2>/dev/null | xargs -n1 basename 2>/dev/null | sort) <(ls "$NEW_SYSTEM/etc/systemd/system/"*.timer 2>/dev/null | xargs -n1 basename 2>/dev/null | sort) || echo "None"
 echo ""
 
 # Show etc changes
