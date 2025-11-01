@@ -5,5 +5,19 @@ set -e
 echo "Building NixOS configuration and showing diff..."
 echo ""
 
-# Run nixos-rebuild dry-activate to show what would change
-sudo nixos-rebuild dry-activate
+# Build the new configuration without activating
+echo "Building new configuration..."
+sudo nixos-rebuild build
+
+# Get current system profile
+CURRENT_SYSTEM="/run/current-system"
+
+# Get newly built system profile
+NEW_SYSTEM="/nix/var/nix/profiles/system"
+
+echo ""
+echo "=== Configuration Diff ==="
+echo ""
+
+# Use nvd to show a nice diff
+nix-shell -p nvd --run "nvd diff $CURRENT_SYSTEM $NEW_SYSTEM"
