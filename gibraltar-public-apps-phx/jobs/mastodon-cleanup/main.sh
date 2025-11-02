@@ -2,10 +2,10 @@
 set -e
 
 # Load environment variables
-if [ -f "$(dirname "$0")/mastodon-cleanup-env" ]; then
-    source "$(dirname "$0")/mastodon-cleanup-env"
+if [ -f "$(dirname "$0")/env" ]; then
+    source "$(dirname "$0")/env"
 else
-    echo "Error: Environment file not found. Please create mastodon-cleanup-env with required credentials." >&2
+    echo "Error: Environment file not found. Please create env with required credentials." >&2
     exit 1
 fi
 
