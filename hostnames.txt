@@ -1,2 +1,2 @@
-gibraltar gibraltar-public-apps-phx
-numbani numbani-personal-apps-sjc
+gibraltar public-apps-phx
+numbani personal-apps-sjc

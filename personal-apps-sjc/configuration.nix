@@ -9,14 +9,14 @@ in
   ###
   imports = [
     ./hardware-configuration.nix
-    ../common/networking.nix
-    (import ../common/locale.nix ./vars.nix)
-    ../common/docker.nix
-    ../common/openssh.nix
-    ../common/nix.nix
-    ../common/packages.nix
-    (import ../common/users.nix ./vars.nix)
-    ../common/services.nix
+    ../os-common/networking.nix
+    (import ../os-common/locale.nix ./vars.nix)
+    ../os-common/docker.nix
+    ../os-common/openssh.nix
+    ../os-common/nix.nix
+    ../os-common/packages.nix
+    (import ../os-common/users.nix ./vars.nix)
+    ../os-common/services.nix
   ];
   
   ###

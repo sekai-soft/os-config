@@ -2,14 +2,32 @@
 
 set -e
 
-# Check if directory argument is provided
-if [ -z "$1" ]; then
-  echo "Usage: $0 <config-directory>"
-  echo "Example: $0 /home/user/Developer/os-config/my-machine"
+# Get the script's directory (os-config root)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Get current hostname
+CURRENT_HOSTNAME="$(hostname)"
+
+# Read hostnames.txt to find the corresponding config directory
+HOSTNAMES_FILE="$SCRIPT_DIR/hostnames.txt"
+
+if [ ! -f "$HOSTNAMES_FILE" ]; then
+  echo "Error: $HOSTNAMES_FILE not found"
   exit 1
 fi
 
-CONFIG_FOLDER="$1"
+# Find the line matching the current hostname and extract the config directory
+CONFIG_FOLDER=$(grep "^$CURRENT_HOSTNAME " "$HOSTNAMES_FILE" | awk '{print $2}')
+
+if [ -z "$CONFIG_FOLDER" ]; then
+  echo "Error: No configuration found for hostname '$CURRENT_HOSTNAME' in $HOSTNAMES_FILE"
+  exit 1
+fi
+
+echo "Using configuration for hostname: $CURRENT_HOSTNAME"
+
+# Build full path to config folder (relative to script directory)
+CONFIG_FOLDER="$SCRIPT_DIR/$CONFIG_FOLDER"
 
 # Validate that the directory exists
 if [ ! -d "$CONFIG_FOLDER" ]; then
