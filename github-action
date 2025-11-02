@@ -75,13 +75,16 @@ for hostname in deploy_hosts:
     # Determine what actions to take based on changed files for this host
     files_for_host = host_to_files[hostname]
     run_os_apply = any(f.endswith(".nix") for f in files_for_host)
-    run_apps_apply = any(f.startswith("apps/") or f.startswith("jobs/") or "/apps/" in f or "/jobs/" in f for f in files_for_host)
+    run_apps_apply = any(f.startswith("apps/") or "/apps/" in f for f in files_for_host)
+    run_jobs_apply = any(f.startswith("jobs/") or "/jobs/" in f for f in files_for_host)
 
     actions = []
     if run_os_apply:
         actions.append("os-apply")
     if run_apps_apply:
         actions.append("apps-apply")
+    if run_jobs_apply:
+        actions.append("jobs-apply")
 
     actions_str = ', '.join(actions) if actions else 'none'
     print(f"{'=' * 42}\nDeploying to: {hostname}\n{'=' * 42}\nActions to run: {actions_str}")
@@ -116,6 +119,14 @@ echo ""
         ssh_script += """
 echo "Running apps-apply..."
 apps-apply
+echo ""
+"""
+
+    # Add jobs-apply if needed
+    if run_jobs_apply:
+        ssh_script += """
+echo "Running jobs-apply..."
+jobs-apply
 echo ""
 """
 
