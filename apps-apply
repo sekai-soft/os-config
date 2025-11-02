@@ -62,9 +62,13 @@ for app_dir in "$APPS_DIR"/*; do
   echo "  Syncing files to $target_dir/"
   rsync -a "$app_dir/" "$target_dir/"
 
-  # Start docker compose
-  echo "  Starting docker compose for $app_name..."
-  docker compose -f "$target_dir/compose.yml" up -d
+  # Start docker compose unless do-not-start-on-apply file exists
+  if [ -f "$app_dir/do-not-start-on-apply" ]; then
+    echo "  Skipping docker compose start (do-not-start-on-apply file present)"
+  else
+    echo "  Starting docker compose for $app_name..."
+    docker compose -f "$target_dir/compose.yml" up -d
+  fi
 
   echo ""
 done
