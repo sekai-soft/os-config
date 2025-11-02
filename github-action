@@ -140,7 +140,7 @@ echo "====================================="
 
     try:
         subprocess.run(
-            ["ssh", hostname, "bash", "-s"],
+            ["ssh", f"nixos@{hostname}", "bash", "-s"],
             input=ssh_script,
             text=True,
             check=True

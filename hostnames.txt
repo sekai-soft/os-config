@@ -1,2 +1,2 @@
-gibraltar public-apps-phx
-numbani personal-apps-sjc
+gibraltar vps-public-apps-phx
+numbani vps-personal-apps-sjc
