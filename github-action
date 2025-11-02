@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+
+import subprocess
+import sys
+import os
+
+# Get the commit SHA (default to HEAD if not provided)
+commit_sha = sys.argv[1] if len(sys.argv) > 1 else "HEAD"
+
+# Repository path on remote hosts
+REMOTE_REPO_PATH = "/home/nixos/os-config"
+
+print(f"Analyzing commit: {commit_sha}\n")
+
+# Get list of changed files in this commit
+result = subprocess.run(
+    ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", commit_sha],
+    capture_output=True,
+    text=True,
+    check=True
+)
+changed_files = [f for f in result.stdout.strip().split('\n') if f]
+
+print("Changed files:")
+print('\n'.join(changed_files) + '\n')
+
+# Parse hostnames.txt to build hostname -> folder mapping
+folder_to_hostname = {}
+all_hostnames = []
+
+with open("hostnames.txt", "r") as f:
+    for line in f:
+        parts = line.strip().split()
+        if len(parts) >= 2:
+            hostname, folder = parts[0], parts[1]
+            folder_to_hostname[folder] = hostname
+            all_hostnames.append(hostname)
+
+mappings = '\n'.join(f"  {folder} -> {hostname}" for folder, hostname in folder_to_hostname.items())
+print(f"Host mappings:\n{mappings}\n")
+
+# Determine affected hosts and track relevant files for each host
+host_to_files = {hostname: [] for hostname in all_hostnames}
+
+# Check each changed file
+for file in changed_files:
+    # Check if file is in os-common/
+    if file.startswith("os-common/"):
+        print(f"Change detected in os-common: {file}")
+        # This file affects all hosts
+        for hostname in all_hostnames:
+            host_to_files[hostname].append(file)
+
+    # Check if file is in a specific host folder
+    else:
+        folder = file.split("/")[0]
+        if folder in folder_to_hostname:
+            hostname = folder_to_hostname[folder]
+            host_to_files[hostname].append(file)
+            print(f"Change detected in {folder}: {file} -> affects {hostname}")
+
+# Build final list of hosts to deploy to (only hosts with changed files)
+deploy_hosts = [hostname for hostname, files in host_to_files.items() if files]
+
+if not deploy_hosts:
+    print("\nNo hosts affected by this commit")
+    sys.exit(0)
+
+hosts_list = '\n'.join(f"  - {host}" for host in deploy_hosts)
+print(f"\nSpecific hosts affected:\n{hosts_list}\n")
+print(f"Deploying to {len(deploy_hosts)} host(s)...\n")
+
+# SSH into each affected host and deploy
+for hostname in deploy_hosts:
+    # Determine what actions to take based on changed files for this host
+    files_for_host = host_to_files[hostname]
+    run_os_apply = any(f.endswith(".nix") for f in files_for_host)
+    run_apps_apply = any(f.startswith("apps/") or f.startswith("jobs/") or "/apps/" in f or "/jobs/" in f for f in files_for_host)
+
+    actions = []
+    if run_os_apply:
+        actions.append("os-apply")
+    if run_apps_apply:
+        actions.append("apps-apply")
+
+    actions_str = ', '.join(actions) if actions else 'none'
+    print(f"{'=' * 42}\nDeploying to: {hostname}\n{'=' * 42}\nActions to run: {actions_str}")
+
+    ssh_script = f"""
+set -euo pipefail
+
+echo "Connected to: $(hostname)"
+echo "Current user: $(whoami)"
+echo "Navigating to: {REMOTE_REPO_PATH}"
+
+cd "{REMOTE_REPO_PATH}"
+
+echo "Fetching latest changes..."
+git fetch origin
+
+echo "Checking out commit: {commit_sha}"
+git checkout "{commit_sha}"
+echo ""
+"""
+
+    # Add os-apply if needed
+    if run_os_apply:
+        ssh_script += """
+echo "Running os-apply..."
+os-apply
+echo ""
+"""
+
+    # Add apps-apply if needed
+    if run_apps_apply:
+        ssh_script += """
+echo "Running apps-apply..."
+apps-apply
+echo ""
+"""
+
+    # Add success message at the end
+    ssh_script += f"""
+echo "====================================="
+echo "Hello from $(hostname)!"
+echo "Successfully deployed commit: {commit_sha}"
+echo "====================================="
+"""
+
+    try:
+        subprocess.run(
+            ["ssh", hostname, "bash", "-s"],
+            input=ssh_script,
+            text=True,
+            check=True
+        )
+        print()
+    except subprocess.CalledProcessError as e:
+        print(f"\nError deploying to {hostname}: {e}\n")
+
+print("Deployment complete!")
