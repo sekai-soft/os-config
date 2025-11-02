@@ -1,2 +1,2 @@
-gibraltar oci-phx
-numbani racknerd-sjc
+gibraltar vps-oci-phx
+numbani vps-racknerd-sjc
