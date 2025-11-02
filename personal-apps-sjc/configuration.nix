@@ -9,6 +9,7 @@ in
   ###
   imports = [
     ./hardware-configuration.nix
+    ./auto-generated.nix
     ../os-common/networking.nix
     (import ../os-common/locale.nix ./vars.nix)
     ../os-common/docker.nix
@@ -18,12 +19,6 @@ in
     (import ../os-common/users.nix ./vars.nix)
     ../os-common/services.nix
   ];
-  
-  ###
-  # Automatically generated for host, don't change
-  ###
-  boot.tmp.cleanOnBoot = true;
-  zramSwap.enable = false;
 
   ###
   # Server specific
