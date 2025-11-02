@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Check if directory argument is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <config-directory>"
+  echo "Example: $0 numbani-personal-apps-sjc"
+  exit 1
+fi
+
+CONFIG_DIR="$1"
+
+# Get the script's directory (os-config root)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Build full path to config directory
+if [[ "$CONFIG_DIR" = /* ]]; then
+  # Absolute path provided
+  CONFIG_PATH="$CONFIG_DIR"
+else
+  # Relative path - resolve from script directory
+  CONFIG_PATH="$SCRIPT_DIR/$CONFIG_DIR"
+fi
+
+# Validate that the directory exists
+if [ ! -d "$CONFIG_PATH" ]; then
+  echo "Error: Directory '$CONFIG_PATH' does not exist"
+  exit 1
+fi
+
+# Check if apps directory exists
+APPS_DIR="$CONFIG_PATH/apps"
+if [ ! -d "$APPS_DIR" ]; then
+  echo "Error: apps directory not found in $CONFIG_PATH"
+  exit 1
+fi
+
+echo "Deploying apps from: $APPS_DIR"
+echo ""
+
+HOME_DIR="/home/nixos"
+
+echo "Deploying to: $HOME_DIR"
+echo ""
+
+# Loop through all apps
+for app_dir in "$APPS_DIR"/*; do
+  if [ ! -d "$app_dir" ]; then
+    continue
+  fi
+
+  app_name=$(basename "$app_dir")
+  target_dir="$HOME_DIR/$app_name"
+
+  echo "=== Deploying $app_name ==="
+
+  # Create target directory
+  mkdir -p "$target_dir"
+
+  # Sync all files and directories from app directory
+  echo "  Syncing files to $target_dir/"
+  rsync -a "$app_dir/" "$target_dir/"
+
+  # Start docker compose
+  echo "  Starting docker compose for $app_name..."
+  docker compose -f "$target_dir/compose.yml" up -d
+
+  echo ""
+done
+
+echo "All apps deployed successfully!"

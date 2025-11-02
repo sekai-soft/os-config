@@ -7,6 +7,7 @@
     htop
     jq
     nano
+    rsync
     tmux
     wget
   ];
