@@ -120,7 +120,7 @@ echo ""
         if run_os_apply:
             ssh_script += """
 echo "Running os-apply..."
-os-apply
+./os-apply
 echo ""
 """
 
@@ -128,7 +128,7 @@ echo ""
         if run_apps_apply:
             ssh_script += """
 echo "Running apps-apply..."
-apps-apply
+./apps-apply
 echo ""
 """
 
@@ -136,7 +136,7 @@ echo ""
         if run_jobs_apply:
             ssh_script += """
 echo "Running jobs-apply..."
-jobs-apply
+./jobs-apply
 echo ""
 """
 
