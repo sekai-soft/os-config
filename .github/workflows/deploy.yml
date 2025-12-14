@@ -1,4 +1,4 @@
-name: Deploy to Hosts
+name: Deploy
 
 on:
   push:
@@ -8,24 +8,37 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    if: github.event_name == 'push'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch full history for git diff-tree
-
-      - name: Connect to Tailscale
-        uses: tailscale/github-action@v2
+      - name: Setup Tailscale
+        uses: tailscale/github-action@v3
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ops
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+      - name: "[gibraltar] Pull repo"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "cd /home/nixos/os-config && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
+      - name: "[gibraltar] Run os-apply"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/os-config/os-apply"
+      - name: "[gibraltar] Run apps-apply"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/os-config/apps-apply"
+      - name: "[gibraltar] Run jobs-apply"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/os-config/jobs-apply"
 
-      - name: Deploy to affected hosts
-        run: ./github-action ${{ github.sha }}
+      - name: "[numbani] Pull repo"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "cd /home/nixos/os-config && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
+      - name: "[numbani] Run os-apply"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/os-apply"
+      - name: "[numbani] Run apps-apply"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/apps-apply"
+      - name: "[numbani] Run jobs-apply"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/jobs-apply"
