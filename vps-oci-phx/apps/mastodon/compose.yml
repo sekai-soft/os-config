@@ -150,11 +150,11 @@ services:
   db-backup:
     image: ghcr.io/sekai-soft/postgres-backup-s3:15
     restart: unless-stopped
-    volumes:
-     - ./post-backup.sh:/post.sh
     env_file:
       - env-backup
+      - /home/nixos/env-backup
     environment:
+      S3_PREFIX: 'mastodon'
       SCHEDULE: '@daily'
       BACKUP_KEEP_DAYS: 14
       POSTGRES_HOST: db
