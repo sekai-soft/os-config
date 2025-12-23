@@ -58,6 +58,6 @@ while IFS= read -r line || [ -n "$line" ]; do
     remote_target_escaped="$(printf '%q' "$remote_dir/$file_name")"
 
     # Create destination directory and copy the file over SSH.
-    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null nixos@antarctica "mkdir -p $remote_dir_escaped"
-    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -- "$path" "nixos@antarctica:$remote_target_escaped"
+    ssh -n -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null nixos@antarctica "mkdir -p $remote_dir_escaped"
+    scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -- "$path" "nixos@antarctica:$remote_target_escaped" < /dev/null
 done < "$paths_file"
