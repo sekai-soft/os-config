@@ -1,0 +1,9 @@
+# One file path per line. Lines starting with # are ignored.
+# Example:
+# /etc/nixos/configuration.nix
+/home/nixos/env-backup
+/home/nixos/galerie/env
+/home/nixos/galerie/env-backup
+/home/nixos/galerie/env-backup-miniflux
+/home/nixos/galerie/sessions_cookies.jsonl
+/home/nixos/github-org-actions/env
