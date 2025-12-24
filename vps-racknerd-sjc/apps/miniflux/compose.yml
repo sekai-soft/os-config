@@ -32,6 +32,21 @@ services:
       interval: 10s
       start_period: 30s
 
+  miniflux-postgres-backup:
+    image: ghcr.io/sekai-soft/postgres-backup-s3:15
+    restart: unless-stopped
+    env_file:
+      - env-backup
+      - /home/nixos/env-backup
+    environment:
+      S3_PREFIX: 'miniflux'
+      SCHEDULE: '@daily'
+      BACKUP_KEEP_DAYS: 14
+      POSTGRES_HOST: miniflux-postgres
+      POSTGRES_DATABASE: miniflux
+      POSTGRES_USER: miniflux
+      POSTGRES_PASSWORD: secret
+
   cloudflared:
     image: cloudflare/cloudflared
     restart: unless-stopped
