@@ -19,16 +19,16 @@ jobs:
 
       - name: Pull repo
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "cd /home/nixos/os-config && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "cd /home/nixos/jbos && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
       - name: Run os-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/os-config/os-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/jbos/os-apply"
       - name: Run apps-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/os-config/apps-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/jbos/apps-apply"
       - name: Run jobs-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/os-config/jobs-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/jbos/jobs-apply"
 
   deploy-numbani:
     runs-on: ubuntu-latest
@@ -43,16 +43,16 @@ jobs:
 
       - name: Pull repo
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "cd /home/nixos/os-config && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "cd /home/nixos/jbos && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
       - name: Run os-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/os-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/jbos/os-apply"
       - name: Run apps-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/apps-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/jbos/apps-apply"
       - name: Run jobs-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/jobs-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/jbos/jobs-apply"
 
   deploy-eichenwalde:
     runs-on: ubuntu-latest
@@ -67,13 +67,13 @@ jobs:
 
       - name: Pull repo
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "cd /root/os-config && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "cd /root/jbos && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
       - name: Run os-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/os-config/os-apply-ubuntu-24-root"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/jbos/os-apply-ubuntu-24-root"
       - name: Run apps-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "HOME_DIR=/root bash /root/os-config/apps-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "HOME_DIR=/root bash /root/jbos/apps-apply"
       - name: Run jobs-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "HOME_DIR=/root bash /root/os-config/jobs-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "HOME_DIR=/root bash /root/jbos/jobs-apply"

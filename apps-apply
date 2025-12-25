@@ -2,7 +2,7 @@
 
 set -e
 
-# Get the script's directory (os-config root)
+# Get the script's directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source common config path logic
