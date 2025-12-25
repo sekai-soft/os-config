@@ -27,6 +27,7 @@ in
   networking.hostName = vars.hostname;
   services.cron.systemCronJobs = [
     "0 0 1 * * nixos /home/nixos/backup-configs/main.sh"
+    "0 0 * * 0 nixos /home/nixos/report-disk-usage/main.sh"
   ];
 
   # This option defines the first version of NixOS you have installed on this particular machine,
