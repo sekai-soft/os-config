@@ -75,7 +75,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/os-config/os-apply-ubuntu-24-root"
       - name: Run apps-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@eichenwalde" "bash /root/os-config/apps-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/os-config/apps-apply"
       - name: Run jobs-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@eichenwalde" "bash /root/os-config/jobs-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/os-config/jobs-apply"
