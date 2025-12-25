@@ -13,13 +13,13 @@ HOME_DIR="${HOME_DIR:-/home/nixos}"
 echo "Deploying to: $HOME_DIR"
 echo ""
 
-# Deploy jobs
-JOBS_DIR="$CONFIG_PATH/jobs"
-if [ -d "$JOBS_DIR" ]; then
+deploy_jobs_from_dir() {
+  local source_dir="$1"
+
   echo "=== Deploying Jobs ==="
   echo ""
 
-  for job_dir in "$JOBS_DIR"/*; do
+  for job_dir in "$source_dir"/*; do
     if [ ! -d "$job_dir" ]; then
       continue
     fi
@@ -38,9 +38,18 @@ if [ -d "$JOBS_DIR" ]; then
 
     echo ""
   done
-else
-  echo "No jobs directory found, skipping jobs deployment"
-  echo ""
+}
+
+# Deploy jobs
+JOBS_DIR="$CONFIG_PATH/jobs"
+COMMON_JOBS_DIR="$SCRIPT_DIR/jobs-common"
+
+if [ -d "$JOBS_DIR" ]; then
+  deploy_jobs_from_dir "$JOBS_DIR"
+fi
+
+if [ -d "$COMMON_JOBS_DIR" ]; then
+  deploy_jobs_from_dir "$COMMON_JOBS_DIR"
 fi
 
 echo "Deployment complete!"
