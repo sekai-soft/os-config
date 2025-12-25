@@ -42,3 +42,10 @@ jobs:
       - name: "[numbani] Run jobs-apply"
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/jobs-apply"
+
+      - name: "[eichenwalde] Pull repo"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "cd /root/os-config && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
+      - name: "[eichenwalde] Run os-apply"
+        run: |
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/os-config/os-apply-ubuntu-24-root"

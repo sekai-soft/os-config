@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "Installing Docker for Ubuntu 24.04..."
+echo ""
+
+if [ ! -f /etc/os-release ]; then
+  echo "ERROR: /etc/os-release not found. Are you running Ubuntu?"
+  exit 1
+fi
+
+. /etc/os-release
+
+if [ "${ID:-}" != "ubuntu" ]; then
+  echo "ERROR: This script targets Ubuntu. Detected: ${ID:-unknown}"
+  exit 1
+fi
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "ERROR: This script must be run as root."
+  exit 1
+fi
+
+if command -v docker >/dev/null 2>&1; then
+  echo "Docker already installed; skipping."
+  exit 0
+fi
+
+apt-get update
+apt-get install -y ca-certificates curl gnupg
+
+install -m 0755 -d /etc/apt/keyrings
+if [ ! -f /etc/apt/keyrings/docker.gpg ]; then
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+    | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  chmod a+r /etc/apt/keyrings/docker.gpg
+fi
+
+arch="$(dpkg --print-architecture)"
+codename="${VERSION_CODENAME:-noble}"
+
+echo "deb [arch=${arch} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu ${codename} stable" \
+  | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+apt-get update
+apt-get install -y \
+  docker-ce \
+  docker-ce-cli \
+  containerd.io \
+  docker-buildx-plugin \
+  docker-compose-plugin
+
+systemctl enable --now docker
+
+echo ""
+echo "Docker installed successfully!"
