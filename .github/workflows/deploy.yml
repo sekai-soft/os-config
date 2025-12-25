@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  deploy:
+  deploy-gibraltar:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     steps:
@@ -17,35 +17,57 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ops
 
-      - name: "[gibraltar] Pull repo"
+      - name: Pull repo
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "cd /home/nixos/os-config && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
-      - name: "[gibraltar] Run os-apply"
+      - name: Run os-apply
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/os-config/os-apply"
-      - name: "[gibraltar] Run apps-apply"
+      - name: Run apps-apply
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/os-config/apps-apply"
-      - name: "[gibraltar] Run jobs-apply"
+      - name: Run jobs-apply
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "bash /home/nixos/os-config/jobs-apply"
 
-      - name: "[numbani] Pull repo"
+  deploy-numbani:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Setup Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ops
+
+      - name: Pull repo
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "cd /home/nixos/os-config && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
-      - name: "[numbani] Run os-apply"
+      - name: Run os-apply
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/os-apply"
-      - name: "[numbani] Run apps-apply"
+      - name: Run apps-apply
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/apps-apply"
-      - name: "[numbani] Run jobs-apply"
+      - name: Run jobs-apply
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@numbani" "bash /home/nixos/os-config/jobs-apply"
 
-      - name: "[eichenwalde] Pull repo"
+  deploy-eichenwalde:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Setup Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ops
+
+      - name: Pull repo
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "cd /root/os-config && git checkout -- . && git fetch origin && git checkout ${{ github.sha }}"
-      - name: "[eichenwalde] Run os-apply"
+      - name: Run os-apply
         run: |
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/os-config/os-apply-ubuntu-24-root"
