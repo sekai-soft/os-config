@@ -57,8 +57,6 @@ jobs:
   deploy-eichenwalde:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-    env:
-      HOME_DIR: /root
     steps:
       - name: Setup Tailscale
         uses: tailscale/github-action@v3
@@ -75,7 +73,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/os-config/os-apply-ubuntu-24-root"
       - name: Run apps-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/os-config/apps-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "HOME_DIR=/root bash /root/os-config/apps-apply"
       - name: Run jobs-apply
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "bash /root/os-config/jobs-apply"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "root@eichenwalde" "HOME_DIR=/root bash /root/os-config/jobs-apply"
