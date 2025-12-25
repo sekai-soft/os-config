@@ -6,7 +6,6 @@
 /home/nixos/galerie/env-backup
 /home/nixos/galerie/env-backup-miniflux
 /home/nixos/galerie/sessions_cookies.jsonl
-/home/nixos/github-org-actions/env
 /home/nixos/mastodon/env
 /home/nixos/mastodon/env-backup
 /home/nixos/mastodon/env-cloudflared
