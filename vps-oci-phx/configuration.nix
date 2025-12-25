@@ -1,26 +1,26 @@
 { config, lib, pkgs, ... }:
 
 let
-  vars = import ./vars.nix;
+  vars = import ./os-etc/vars.nix;
 in
 {
   ###
   # Imports
   ###
   imports = [
-    ./hardware-configuration.nix
-    ./auto-generated.nix
+    ./os-etc/hardware-configuration.nix
+    ./os-etc/auto-generated.nix
     ../os-common/networking.nix
-    (import ../os-common/locale.nix ./vars.nix)
+    (import ../os-common/locale.nix ./os-etc/vars.nix)
     ../os-common/docker.nix
     ../os-common/openssh.nix
     ../os-common/nix.nix
     ../os-common/packages.nix
     ../os-common/shell.nix
-    (import ../os-common/users.nix ./vars.nix)
+    (import ../os-common/users.nix ./os-etc/vars.nix)
     ../os-common/services.nix
     "${builtins.fetchTarball "https://github.com/nix-community/disko/archive/v1.11.0.tar.gz"}/module.nix"
-    ./disk-config.nix
+    ./os-etc/disk-config.nix
   ];
 
   ###
