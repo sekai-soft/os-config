@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Source common config path logic
 source "$SCRIPT_DIR/lib-get-config-path"
 
-HOME_DIR="/home/nixos"
+HOME_DIR="${HOME_DIR:-/home/nixos}"
 
 echo "Deploying to: $HOME_DIR"
 echo ""

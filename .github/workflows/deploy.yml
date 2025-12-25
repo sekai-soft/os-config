@@ -57,6 +57,8 @@ jobs:
   deploy-eichenwalde:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    env:
+      HOME_DIR: /root
     steps:
       - name: Setup Tailscale
         uses: tailscale/github-action@v3
